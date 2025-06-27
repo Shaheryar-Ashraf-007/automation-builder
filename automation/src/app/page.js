@@ -1,8 +1,10 @@
+import Navbar from "./components/global/Navbar";
+
 export default function Home() {
   return (
-    <div className="bg-black text-white text-center">
-      hello
-    </div>
+    <main>
+      <Navbar/>
+    </main>
 
 
     

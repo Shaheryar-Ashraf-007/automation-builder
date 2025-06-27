@@ -1,7 +1,10 @@
 "use client";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "../../styles/global.css";
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from "./components/ThemeProviders";
+const font = DM_Sans({ subsets: ["latin"] });
+
+
 
 
 
@@ -11,13 +14,20 @@ export default function RootLayout({ children }) {
   
 
   return (
-    <html lang="en">
-      <body className={`${inter.className} `}>
-        <div>
-          
+    
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${font.className} `}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange>
                 {children}
-        </div>
+        </ThemeProvider>
       </body>
     </html>
+    
   );
 }
+
+
