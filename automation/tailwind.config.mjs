@@ -9,6 +9,19 @@ const config = {
   plugins: [require("tailwindcss-animate")],
     theme: {
     	extend: {
+
+			animation: {
+					scroll: 'scroll var(--animation-duration) linear infinite var(--animation-direction)',
+				},
+			
+			 keyframes: {
+				scroll: {
+				'0%': { transform: 'translateX(0)' },
+				'100%': { transform: 'translateX(-50%)' },
+				},
+			},
+
+			
     		borderRadius: {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',
