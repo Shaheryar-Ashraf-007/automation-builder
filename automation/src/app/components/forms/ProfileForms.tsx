@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import React, { use, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { EditUserProfileSchema } from '../../../lib/types'
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { EditUserProfileSchema } from '../../../lib/types.jsx';
 import {
   Form,
   FormControl,
@@ -12,18 +12,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
-import { Loader2 } from 'lucide-react'
+} from '../ui/form.jsx';
+import { Input } from '../ui/input.jsx';
+import { Button } from '../ui/button.jsx';
+import { Loader2 } from 'lucide-react';
+
+type User = {
+  name: string;
+  email: string;
+};
 
 type Props = {
-  user: any
-  onUpdate?: any
-}
+  user: User;
+  onUpdate?: (name: string) => Promise<void>;
+};
 
-const ProfileForm = ({ user, onUpdate }: Props) => {
-  const [isLoading, setIsLoading] = useState(false)
+export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof EditUserProfileSchema>>({
     mode: 'onChange',
     resolver: zodResolver(EditUserProfileSchema),
@@ -31,19 +36,19 @@ const ProfileForm = ({ user, onUpdate }: Props) => {
       name: user.name,
       email: user.email,
     },
-  })
+  });
 
-  const handleSubmit = async (
-    values: z.infer<typeof EditUserProfileSchema>
-  ) => {
-    setIsLoading(true)
-    await onUpdate(values.name)
-    setIsLoading(false)
-  }
+  const handleSubmit = async (values: z.infer<typeof EditUserProfileSchema>) => {
+    setIsLoading(true);
+    if (onUpdate) {
+      await onUpdate(values.name);
+    }
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    form.reset({ name: user.name, email: user.email })
-  }, [user])
+    form.reset({ name: user.name, email: user.email });
+  }, [user, form]);
 
   return (
     <Form {...form}>
@@ -88,7 +93,8 @@ const ProfileForm = ({ user, onUpdate }: Props) => {
         />
         <Button
           type="submit"
-          className="self-start hover:bg-[#2F006B] hover:text-white "
+          className="self-start hover:bg-[#2F006B] hover:text-white"
+          disabled={isLoading} // Disable button while loading
         >
           {isLoading ? (
             <>
@@ -101,7 +107,6 @@ const ProfileForm = ({ user, onUpdate }: Props) => {
         </Button>
       </form>
     </Form>
-  )
-}
+  );
+};
 
-export default ProfileForm

@@ -23,6 +23,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "@uploadcare/blocks": "^0.50.4",
+    "@uploadcare/react-uploader": "^1.10.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.19.2",
@@ -45,9 +46,12 @@
     "node": ">=0.8"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
     "@types/node": "24.0.4",
     "@types/react": "19.1.8",
     "autoprefixer": "^10.4.20",
+    "babel-preset-next": "^1.4.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.3",
     "eslint-plugin-tailwindcss": "^3.17.5",
