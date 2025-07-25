@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { EditUserProfileSchema } from '../../../lib/types.jsx';
+import { EditUserProfileSchema } from '../../../lib/types';
 import {
   Form,
   FormControl,
@@ -12,23 +12,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form.jsx';
-import { Input } from '../ui/input.jsx';
-import { Button } from '../ui/button.jsx';
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
 
-type User = {
-  name: string;
-  email: string;
-};
-
+// Define props
 type Props = {
-  user: User;
+  user: {
+    name: string;
+    email: string;
+  };
   onUpdate?: (name: string) => Promise<void>;
 };
 
 export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof EditUserProfileSchema>>({
     mode: 'onChange',
     resolver: zodResolver(EditUserProfileSchema),
@@ -40,14 +40,20 @@ export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
 
   const handleSubmit = async (values: z.infer<typeof EditUserProfileSchema>) => {
     setIsLoading(true);
-    if (onUpdate) {
-      await onUpdate(values.name);
+    try {
+      if (onUpdate) {
+        await onUpdate(values.name);
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
-    form.reset({ name: user.name, email: user.email });
+    form.reset({
+      name: user.name,
+      email: user.email,
+    });
   }, [user, form]);
 
   return (
@@ -57,22 +63,19 @@ export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
         onSubmit={form.handleSubmit(handleSubmit)}
       >
         <FormField
-          disabled={isLoading}
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg">User full name</FormLabel>
+              <FormLabel className="text-lg">User Full Name</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Name"
-                />
+                <Input {...field} placeholder="Name" disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="email"
@@ -80,21 +83,17 @@ export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
             <FormItem>
               <FormLabel className="text-lg">Email</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  disabled={true}
-                  placeholder="Email"
-                  type="email"
-                />
+                <Input {...field} placeholder="Email" type="email" disabled />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <Button
           type="submit"
           className="self-start hover:bg-[#2F006B] hover:text-white"
-          disabled={isLoading} // Disable button while loading
+          disabled={isLoading}
         >
           {isLoading ? (
             <>
@@ -109,4 +108,3 @@ export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
     </Form>
   );
 };
-
