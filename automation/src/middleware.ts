@@ -10,7 +10,6 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
   publicRoutes: [
-     '/',
     '/api/clerk-webhook',
     '/api/drive-activity/notification',
     '/api/payment/success',
