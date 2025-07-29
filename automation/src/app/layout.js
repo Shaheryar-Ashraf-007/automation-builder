@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "../../styles/global.css";
 import { ThemeProvider } from "./components/ThemeProviders";
 import { ClerkProvider, SignedIn, SignedOut, SignIn } from "@clerk/nextjs";
+
 const font = DM_Sans({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
@@ -16,14 +17,15 @@ export default function RootLayout({ children }) {
             enableSystem={true}
             disableTransitionOnChange
           >
-            <div className="flex items-center justify-center w-full h-screen">
             <SignedIn>
               {children}
             </SignedIn>
+            
             <SignedOut>
-              <SignIn routing="hash" />
+              <div className="flex items-center justify-center min-h-screen">
+                <SignIn routing="hash" />
+              </div>
             </SignedOut>
-            </div>
           </ThemeProvider>
         </ClerkProvider>
       </body>

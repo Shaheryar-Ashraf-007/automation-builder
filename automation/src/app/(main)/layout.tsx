@@ -7,9 +7,10 @@ export default function ConnectionsLayout({
 }) {
   return (
     <div >
-      <Sidebar />
+      
 
-      <div className="w-full">
+      <div className="absolute left-0 w-full top-0">
+        <Sidebar />
         <InfoBar />
       
               {children}
