@@ -1,36 +1,56 @@
-import { db } from "../../../lib/db";
+import { db } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 
-import { NextResponse } from "next/server";
+interface WebhookData {
+  id: string;
+  email_addresses: { email_address: string }[];
+  first_name: string;
+  image_url?: string;
+}
 
+export async function POST(req: Request): Promise<NextResponse> {
+  const webhookSecret = process.env.WEBHOOK_SECRET;
 
-export async function POST(request: Request) {
-    try {
-        const body = await request.json();
-        const { id,email_address, first_name, imageurl } = body?.data;
-        const email = email_address?.[0]?.email_address || "";
-        console.log("Received webhook data:", body);
+  const signature = req.headers.get('svix-signature');
+  const rawBody = await req.text();
 
-        await db.user.upsert({
-            where: { clerkId: id },
-            update:{
-                email,
-                name: first_name,
-                profileImage: imageurl
-            },
+  const expectedSignature = crypto
+    .createHmac('sha256', webhookSecret!)
+    .update(rawBody)
+    .digest('hex');
 
-            create:{
-                clerkId: id,
-                email,
-                name: first_name || "",
-                profileImage: imageurl || "",
-            }
+  if (signature !== expectedSignature) {
+    console.error('Invalid signature');
+    return new NextResponse('Invalid signature', { status: 403 });
+  }
 
-        })
+  try {
+    const body = JSON.parse(rawBody) as { data: WebhookData };
+    const { id, email_addresses, first_name, image_url } = body.data;
 
-        return new NextResponse.json({ message: "User data processed successfully" }, { status: 200 });
-    } catch (error) {
-        console.error("Error processing webhook:", error);
-        return new NextResponse.json({ error: "Failed to process webhook" }, { status: 500 });
-        
+    if (!id || !email_addresses || !email_addresses[0]?.email_address) {
+      return new NextResponse('Invalid request body', { status: 400 });
     }
+
+    await db.user.upsert({
+      where: { clerkId: id },
+      update: {
+        email: email_addresses[0].email_address,
+        name: first_name,
+        profileImage: image_url || 'default_image_url.png',
+      },
+      create: {
+        clerkId: id,
+        email: email_addresses[0].email_address,
+        name: first_name || '',
+        profileImage: image_url || 'default_image_url.png',
+      },
+    });
+
+    return new NextResponse('User created/updated successfully', { status: 200 });
+  } catch (error) {
+    console.error('Error creating/updating user:', error);
+    return new NextResponse('Error processing request', { status: 500 });
+  }
 }
